@@ -32,14 +32,16 @@ bot.on("ready", function (rawEvent) {
     console.log("----------");
 });
 
+
 bot.on("message", function (user, userID, channelID, message, rawEvent) {
     console.log(user + " - " + userID);
-    console.log("in " + channelID);
+    console.log("in " + channelID);  
+    message = bot.fixMessage(message);
     console.log(message);
     console.log("----------");
     if ((user !== BotName) && (channelID.toString() === DiscordChannel)) {
         conn.send(new xmpp.Element('message', { to: room_jid, type: 'groupchat' }).
-            c('body').t(user.match(/[ -~]+/) + " : " + message.match(/[ -~]+/))//regex to prevent unicode characters from breaking node-xmpp
+            c('body').t(user.match(/[ -~]+/g) + " : " + message.match(/[ -~]+/g))//regex to prevent unicode characters from breaking node-xmpp
         );
     }
     if (message === "ping") {
