@@ -39,7 +39,7 @@ bot.on("message", function (user, userID, channelID, message, rawEvent) {
     message = bot.fixMessage(message);
     console.log(message);
     console.log("----------");
-    if ((user !== BotName) && (channelID.toString() === DiscordChannel)) {
+    if ((user !== BotName) && (channelID.toString() === DiscordChannel) && (undefined != user)) {
         conn.send(new xmpp.Element('message', { to: room_jid, type: 'groupchat' }).
             c('body').t(user.match(/[ -~]+/g) + " : " + message.match(/[ -~]+/g))//regex to prevent unicode characters from breaking node-xmpp
         );
@@ -174,7 +174,7 @@ conn.on('stanza', function (stanza) {
         console.log('Sending response: ' + stanza.root().toString() + '\r\n-------------------')
         console.log(ssender[1]);
         console.log(stanza.children[0].children[0]);
-        if (ssender[1] !== BotName) {
+        if ((ssender[1] !== BotName) && (undefined != ssender[1])){
             bot.sendMessage({
                 to: DiscordChannel,
                 message: "**" + ssender['1'] + "**" + " : " + stanza.children[0].children[0],
