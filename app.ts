@@ -1,5 +1,4 @@
-﻿
-var BotName = '', // name of bot needs to match in both discord and xmpp for simplicity
+﻿var BotName = '', // name of bot needs to match in both discord and xmpp for simplicity
     //discord settings
     DiscordChannel = '', //channel to relay xmpp in discord example: 75630661951557632
     DiscordEmail = "", //discord email for login example: mymail@email.com
@@ -8,7 +7,7 @@ var BotName = '', // name of bot needs to match in both discord and xmpp for sim
     XmppJid = '', //xmpp nickname + server example mynic@myxmppserver.com
     XmppPassword = '', //xmpp password
     XmppRoom = ''; //xmpp room for bot to relay
-    
+
 //---------------------------------------------------------------------------------------------------------
 //discord connection
 //---------------------------------------------------------------------------------------------------------
@@ -162,7 +161,6 @@ conn.on('stanza', function (stanza) {
     if (stanza.is('message') &&
         // Important: never reply to errors!
         (stanza.attrs.type !== 'error') &&
-        (stanza.children[0].children[0] !== BotName) &&
         (stanza.attrs.from.toString() !== BotName)
     ) {
         // Swap addresses...
@@ -172,16 +170,18 @@ conn.on('stanza', function (stanza) {
         // and send back
         var ssender = stanza.attrs.to.split("/");
         console.log('Sending response: ' + stanza.root().toString() + '\r\n-------------------')
-        console.log(ssender[1]);
-        console.log(stanza.children[0].children[0]);
-        if ((ssender[1] !== BotName) && (undefined != ssender[1])){
-            bot.sendMessage({
-                to: DiscordChannel,
-                message: "**" + ssender['1'] + "**" + " : " + stanza.children[0].children[0],
-                nonce: "80085" //Optional
-            }, function (response) { //CB Optional
-                console.log(response.id); //Message ID
-            });
+        
+        if ((ssender[1] !== BotName) && (undefined != ssender[1]) && (undefined != stanza.children[0].children)){
+            try {
+                bot.sendMessage({
+                    to: DiscordChannel,
+                    message: "**" + ssender['1'] + "**" + " : " + stanza.children[0].children[0],
+                    nonce: "80085" //Optional
+                }, function (response) { //CB Optional
+                    console.log(response.id); //Message ID
+                });
+            }
+            catch(e) { console.log("impressive break of the server",e); }
         }
     }
 });
